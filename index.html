@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style_toggle.css">
+    <link rel="stylesheet" href="style_overallStudentPerformance.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script> -->
+    <title>NDO Performance Dashobard</title>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <div class="topnav" id="topNav">
+        <!-- "return false" to prevent the default behavior of navigating to the anchor link's target  -->
+        <a href="#homePage" onclick="showPage('homePage'); return false;"> Home</a>
+        <a href="#studentperformPage" onclick="showPage('studentperformPage'); return false;">Student Performance</a>
+        <a href="#classperformPage" onclick="showPage('classperformPage'); return false;">Class Performance</a>
+        <a href="#teacherperformPage" onclick="showPage('teacherperformPage'); return false;">Teacher Performance</a>
+        <a href="#attendancePage" onclick="showPage('attendancePage'); return false;">Attendance</a>
+        <a href="#overallstudentperformance" onclick="showPage('overallstudentperformance'); return false;">Overall Student Performance</a>
+        <!-- <a href="#factoranalysisPage" onclick="showPage('factoranalysisPage'); return false;">Factor Analysis Report</a> -->
+        <a href="javascript:void(0);" class="icon" onclick="topNavigation()">
+            <i class="fa fa-bars"></i>
+        </a>
+    </div>
+
+    <!-- Pages -->
+    <!-- Home -->
+    <div id="homePage">
+        <div class="containerHOME">
+            <h1>Welcome Page</h1>
+            <div class="container-row">
+                <button class="button-pressedEffect" onclick="showPage('studentperformPage'); return false;">Student Dashboard</button>
+                <button class="button-pressedEffect" onclick="showPage('classperformPage'); return false;">Class Dashboard</button>
+                <button class="button-pressedEffect" onclick="showPage('teacherperformPage'); return false;">Teacher Dashboard</button>
+                <button class="button-pressedEffect" onclick="showPage('attendancePage'); return false;">Attendance Dashboard</button>
+                <button class="button-pressedEffect" onclick="showPage('overallstudentperformance'); return false;">Overall Student Performance</button>
+            </div>
+            <br>
+            <div class="container-row">
+                <!-- <button class="button-pressedEffect" style="background-color: #1c1d52;" onclick="myFunction()">Download PDF</button> -->
+            </div>
+        </div>
+    </div>
+    <script>
+        // id="download-pdf"
+        // onclick="myFunction()"
+        function myFunction() {
+            const content = "This function is currently in development."
+            alert(content);
+        }
+    </script>
+    <!-- Student Dashboard -->
+    <div id="studentperformPage" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a>
+                <div class="personal_info"></div>
+            </a>
+            <div class="table-container">
+                <table>
+                    <caption>English Measurements</caption>
+                    <!-- <tr>
+                        <th colspan="4">English Measurement</th>
+                    </tr> -->
+                    <tr>
+                        <td>R - Reading</td>
+                        <td>W - Writing</td>
+                        <td>L - Listening</td>
+                        <td>S - Speaking</td>
+                    </tr>
+                </table>
+                <table>
+                    <caption>Squash Measurements</caption>
+                    <!-- <tr>
+                        <th colspan="4">Squash Measurement</th>
+                        <td></td>
+                    </tr> -->
+                    <tr>
+                        <td>E - Endurance</td>
+                        <td>C - Coordinate</td>
+                        <td>S - Skill</td>
+                        <td>M - Movement</td>
+                    </tr>
+                    <table>
+
+                        <tr>
+                            <td colspan="3" style="text-align: center;">FH - Forehand; BH - Backhand</td>
+                        </tr>
+                        <tr>
+                            <td>D - Drive</td>
+                            <td>S - Serve</td>
+                            <td>V - Volley</td>
+                        </tr>
+                        <tr>
+                            <td>CC - Cross Court</td>
+                            <td>RS - Return of Serve</td>
+                            <td>B - Boast</td>
+                        </tr>
+                    </table>
+                </table>
+            </div>
+            <!-- <b href="#factoranalysisPage" onclick="showPage('factoranalysisPage'); return false;"> Skills Gap Analysis</b> -->
+        </div>
+        <!-- Header -->
+        <div class="container">
+            <h1>Student Performance Dashboard</h1>
+            <label for="studentSelect">Select Student Name:</label>
+            <select id="studentSelect"></select>
+            <p>Selected year: 
+                <input type="range" id="year_student_line" oninput="year_student_line_value.innerText = this.value">
+                <span id="year_student_line_value"></span>
+            </p>
+            <p>
+                Show Lable on Charts: 
+                <label class="switch" for="switch_studentPerformance">
+                    <input type="checkbox" id="switch_studentPerformance">
+                    <span class="slider"></span>
+                </label>
+            </p>
+        </div>
+        <!-- Chart -->
+        <div class="container">
+            <h3>Monthly Report</h3>
+            <!-- Montly Report -->
+                <!-- make the drop down menu to choose year -->
+            <div class="container-row">
+                <!-- Decribe each marks -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        English KPIs
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="stacked_bar_chart_english"></div>
+                    </div>
+                </div>
+                <!-- Decribe each marks -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        Squash KPIs
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="stacked_bar_chart_squash"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-row">
+                <!-- Report -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        English & Squash Average KPIs
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="line_chart"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- attendance report -->
+            <div class="container-row">
+                <!-- Decribe each marks -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        Attendance
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="line_chart_att_student"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Forecasting -->
+        <div class="container">
+            <h3>Forecasting</h3>
+            <!-- Yearly Report & Forecasting -->
+            <div class="container-row">
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        English
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="line_chart_yearly"></div>
+                        <div id="noPrediction"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Class & Cohort Dashboard -->
+    <div id="classperformPage" style="display: none;">
+        <div class="containerHOME">
+            <div style="display: flex;">
+                <div style="flex: 3;">
+                    <!-- Left-hand side content -->
+                    <h1>Class Performance Dashboard</h1>
+                    <label for="cohortSelect">Select Cohort:</label>
+                    <select id="cohortSelect"></select>
+                    <label for="classSelect">Select Class Name:</label>
+                    <select id="classSelect"></select>
+                    <label for="year_class">Year:</label>
+                    <input type="range" id="year_class" oninput="year_class_value.innerText = this.value">
+                    <p>Selected year: <span id="year_class_value"></span></p>
+                    <p>
+                        Show Label on Charts: 
+                        <label class="switch" for="switch_classPerformance">
+                            <input type="checkbox" id="switch_classPerformance">
+                            <span class="slider"></span>
+                        </label>
+                    </p>
+                <h3>Monthly Report</h3>
+                </div>
+                <div style="flex: 1;">
+                    <!-- Right-hand side content (table container) -->
+                    
+            <div class="table-container">
+                <table>
+                    <caption>English Measurements</caption>
+                    <!-- <tr>
+                        <th colspan="4">English Measurement</th>
+                    </tr> -->
+                    <tr>
+                        <td>R - Reading</td>
+                        <td>W - Writing</td>
+                        <td>L - Listening</td>
+                        <td>S - Speaking</td>
+                    </tr>
+                </table>
+                <table>
+                    <caption>Squash Measurements</caption>
+                    <!-- <tr>
+                        <th colspan="4">Squash Measurement</th>
+                        <td></td>
+                    </tr> -->
+                    <tr>
+                        <td>E - Endurance</td>
+                        <td>C - Coordinate</td>
+                        <td>S - Skill</td>
+                        <td>M - Movement</td>
+                    </tr>
+                    <table>
+
+                        <tr>
+                            <td colspan="3" style="text-align: center;">FH - Forehand; BH - Backhand</td>
+                        </tr>
+                        <tr>
+                            <td>D - Drive</td>
+                            <td>S - Serve</td>
+                            <td>V - Volley</td>
+                        </tr>
+                        <tr>
+                            <td>CC - Cross Court</td>
+                            <td>RS - Return of Serve</td>
+                            <td>B - Boast</td>
+                        </tr>
+                    </table>
+                </table>
+            </div>
+                </div>
+            </div>
+            <!-- Montly Report -->
+                <!-- make the drop down menu to choose year -->
+            <div class="container-row">
+                <!-- Decribe each marks -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        English
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="stacked_bar_chart_class_english"></div>
+                        <div id="messageDisplay1"></div>
+                    </div>
+                </div>
+                <!-- Report -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        English & Squash - Average Score
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="line_chart_class"></div>
+                        <div id="messageDisplay2"></div>
+                    </div>
+                </div>
+                <!-- Decribe each marks -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        Squash
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="stacked_bar_chart_class_squash"></div>
+                        <div id="messageDisplay3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>   
+    </div>
+    <!-- Teacher Dashboard -->
+    <div id="teacherperformPage" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a>
+                <div class="teacher_info"></div>
+            </a>
+        </div>
+        <div class="container">
+            <h1>Teacher Performance Dashboard</h1>
+            <label for="teacherSelect">Select Teacher Name:</label>
+            <select id="teacherSelect">
+            </select>
+            <label for="cohortSelect_teacher">Select Cohort:</label>
+            <select id="cohortSelect_teacher"></select>
+            <label for="year_teacher">Year:</label>
+            <input type="range" id="year_teacher" oninput="year_teacher_value.innerText = this.value">
+            <p>Selected year: <span id="year_teacher_value"></span></p>
+            <p>
+                Show Lable on Charts: 
+                <label class="switch" for="switch_teacherPerformance">
+                    <input type="checkbox" id="switch_teacherPerformance">
+                    <span class="slider"></span>
+                </label>
+            </p>
+            <!-- Montly Report -->
+                <!-- make the drop down menu to choose year -->
+            <div class="container-row">
+                <!-- Decribe each marks -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        KPIs
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="stacked_bar_chart_teacher"></div>
+                    </div>
+                </div>
+                <!-- Report -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        Average KPIs
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="line_chart_teacher_selectedCohort"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-row">
+                <!-- Report -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        Attendance
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="line_chart_att_teacher"></div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <!-- Attendance Dashboard -->
+    <div id="attendancePage" style="display: none;">
+        <div class="containerHOME">
+            <h1>Attendance Performance Dashboard</h1>
+            <label for="cohortSelect_attendance">Select Cohort:</label>
+            <select id="cohortSelect_attendance"></select>
+            <label for="classSelect_attendance">Select Class Name:</label>
+            <select id="classSelect_attendance">
+                <option value="">--Select--</option>
+                <option value="HAPPY CUBS">Happy Cubs</option>
+                <option value="KIND CUBS">Kind Cubs</option>
+                <option value="STRONG CUBS">Strong Cubs</option>
+            </select>
+            <label for="year_att_gender">Year:</label>
+            <input type="range" id="year_att_gender" oninput="year_att_gender_value.innerText = this.value">
+            <p>Selected year: <span id="year_att_gender_value"></span></p>
+            <p>
+                Show Lable on Charts: 
+                <label class="switch" for="switch_attendancePerformance">
+                    <input type="checkbox" id="switch_attendancePerformance">
+                    <span class="slider"></span>
+                </label>
+            </p>
+            <!-- Montly Report -->
+                <!-- make the drop down menu to choose year -->
+            <div class="container-row">
+                <!-- Decribe each marks -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        NDO Attendance Rate
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="line_chart_att_NDO"></div>
+                    </div>
+                </div>
+                <!-- Report -->
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        Class & Cohort
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="line_chart_att_class"></div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <!-- Overall Student Performance -->
+    <div id="overallstudentperformance" style="display: none;">
+        <div class="dashboard">
+            <div class="container_overallStudentPerformance left">
+                <div class="header">
+                    <div class="select-year-grade">
+                        <select id="select-year">
+                            <option value="">Select Year</option>
+                            <!-- Add year options here -->
+                        </select>
+                        <select id="select-cohort">
+                            <option value="">Select Cohort</option>
+                            <!-- Add grade options here -->
+                        </select>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalStudent"></div>
+                            <div class="stat-label">Student Count</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalPresenceRate"></div>
+                            <div class="stat-label">Student Attendance</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="main-content">
+                    <div class="summary">
+                        <div class="summary-item">
+                            <div class="summary-number" id="changeNumberOfStudent"></div>
+                            <div class="summary-label">Student Count</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="changePresenceRate"></div>
+                            <div class="summary-label">Student Attendance</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="changeEnglishKPI"></div>
+                            <div class="summary-label">English KPIs Average</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-number" id="changeSquashKPI"></div>
+                            <div class="summary-label">Squash KPIs Average</div>
+                        </div>
+                    </div>
+                    <div class="charts">
+                        <div class="chart student-count">
+                            <div class="charts-label">
+                                <h4>Student Count</h4>
+                                <button class="gender_Button" id="genderButton">Default</button>
+                            </div>
+                            <div class="chart-container">
+                                <div id="donutchart_classStudentCount"></div>
+                            </div>
+                            <div class="chart-container">
+                                <div id="barchart_classStudentCount"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="charts">
+                        <div class="chart examination-results">
+                            <div class="charts-label">
+                                <h4>English KPIs</h4>
+                                <button class="gender_Button" id="allYear_English">all years</button>
+                            </div>
+                            <div id="barchart_EnglishKPIs"></div>
+                        </div>
+                        <div class="chart examination-results">
+                            <div class="charts-label">
+                                <h4>Squash KPIs</h4>
+                                <button class="gender_Button" id="allYear_Squash">all years</button>
+                            </div>
+                            <div id="barchart_SquashKPIs"></div>
+                        </div>
+                    </div>
+                    <div class="student-details">
+                        <h4>Students Details</h6>
+                        <button class="navigation-button left">&lt;</button>
+                        <div class="student-cards-container" id="studentCardsContainer"></div>
+                        <button class="navigation-button right">&gt;</button>
+                    </div>          
+                </div>
+            </div>
+            <div class="container_overallStudentPerformance right">
+                <div class="highlights">
+                    <div class="highlight-item">
+                        <!-- <h5>Best In English</h5> -->
+                        <div class="student-cards-container_highlight">
+                            <div class="student-cards-wrapper" id="bestKPIinEnglish"></div>
+                        </div>
+                        <!-- <div id="bestKPIinEnglish" style="font-size: 10px;"></div> -->
+                        <div class="highlight-label">Best In English</div>
+                    </div>
+                    <div class="highlight-item">
+                        <!-- <h5>Best In Squash</h5> -->
+                        <div class="student-cards-container_highlight">
+                            <div class="student-cards-wrapper" id="bestKPIinSquash"></div>
+                        </div>
+                        <!-- <div id="bestKPIinSquash" style="font-size: 10px;"></div> -->
+                        <div class="highlight-label">Best In Squash</div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="student-cards-container_highlight">
+                            <div class="student-cards-wrapper" id="bestStudent_inAttendance"></div>
+                        </div>
+                        <div class="highlight-label">Best In Attendance</div>
+                    </div>
+                </div>
+                <div class="highlights">
+                    <div class="highlight-item">
+                        <!-- <h5>Most Improved In English</h5> -->
+                        <div class="student-cards-container_highlight">
+                            <div class="student-cards-wrapper" id="mostImproveKPIinEnglish" style="font-size: 10px;"></div>
+                        </div>
+                        <!-- <div id="mostImproveKPIinEnglish" style="font-size: 10px;"></div> -->
+                        <div class="highlight-label">Most Improved In English</div>
+                    </div>
+                    <div class="highlight-item">
+                        <!-- <h5>Most Improved In Squash</h5> -->
+                        <div class="student-cards-container_highlight">
+                            <div class="student-cards-wrapper" id="mostImproveKPIinSquash" style="font-size: 10px;"></div>
+                        </div>
+                        <!-- <div id="mostImproveKPIinSquash" style="font-size: 10px;"></div> -->
+                        <div class="highlight-label">Most Improved In Squash</div>
+                    </div>
+                    <div class="highlight-item">
+                        <!-- <h5>Most Improved In Attendance</h5> -->
+                        <div class="student-cards-container_highlight">
+                            <div class="student-cards-wrapper" id="mostImproveStudent_inAttendance" style="font-size: 10px;"></div>
+                        </div>
+                        <!-- <div id="mostImproveStudent_inAttendance" style="font-size: 10px;"></div> -->
+                        <div class="highlight-label">Most Improved In Attendance</div>
+                    </div>
+                </div>
+                <div class="highlights">
+                    <div class="average-score">
+                        <h4>Average Score</h4>
+                        <br>
+                        <div class="average-score-item">
+                            <div id="donutchart_EnglishKPIs"></div>
+                        </div>
+                        <div class="average-score-item">
+                            <div id="donutchart_SquashKPIs"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Factor Skill Gap Analysis -->
+    <div id="factoranalysisPage" style="display: none;">
+        <div class="containerHOME">
+            <h1>Factor Skill Gap Analysis</h1>
+            <label for="year_att_gender">Year:</label>
+            <input type="range" id="year_att_factor_analysis" oninput="year_att_factor_analysis_value.innerText = this.value">
+            <label for="select-cohort_factor_analysis">Select Cohort: </label>
+            <select id="select-cohort_factor_analysis">
+                <option value="">Select Cohort</option>
+            </select>
+            <p>Selected year: <span id="year_att_factor_analysis_value"></span></p>
+            <div class="container-row">
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        Correlogram_English
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="correlogram_English"></div>
+                    </div>
+                </div>
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        Correlogram_Squash
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="correlogram_Squash1"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-row">
+                <div class="containerChart">
+                    <div class="containerChart-head">
+                        Correlogram_Squash
+                    </div>
+                    <div class="containerChart-body">
+                        <div id="correlogram_Squash2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="display.js" type="module"></script>
+    <script src="display_attendance.js" type="module"></script>
+    <script src="display_overallStudentPerformance.js" type="module"></script>
+    <script src="display_factorAnalysis.js" type="module"></script>
+    <script src="./js/forHTML/nav.js"></script>
+    <script src="./js/forHTML/yearSlicer.js"></script>
+    <script src="./js/forHTML/cohortSelector.js"></script>
+    <!-- <script src="downloadPDF.js"></script> -->
+</body>
+</html>

@@ -1,0 +1,370 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+}
+
+h4 {
+    padding: 0;
+    margin: 0;
+}
+
+.dashboard {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.container_overallStudentPerformance {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex: 1;
+    margin: 10px;
+}
+
+.left {
+    flex: 2;
+}
+
+.right {
+    flex: 1;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.select-year-grade select {
+    margin: 0 10px;
+    padding: 5px;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+}
+
+.stat-item {
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-number {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.stat-label {
+    color: #888;
+    font-size: 10px;
+}
+
+.main-content {
+    margin-top: 20px;
+}
+
+.summary {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.summary_number_arrow {
+    /* margin: 0;
+    padding: 0; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* width: 100%; */
+}
+
+.summary-item {
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.summary-label {
+    color: #888;
+    font-size: 10px;
+}
+.charts {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.charts-label{
+    margin-bottom: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chart {
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex: 1;
+}
+
+.chart-container {
+    width: 50%; /* Each container takes 50% of .chart width */
+    float: left;
+}
+
+.average-score {
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px;
+}
+
+.average-score-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    text-align: center;
+    flex: 1 1 calc(50% - 20px); /* Three items per row, accounting for the gap */
+    box-sizing: border-box; /* Ensure padding and border are included in width calculation */
+}
+
+.highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px;
+}
+
+.highlight-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex: 1 1 calc(33.333% - 20px); /* Three items per row, accounting for the gap */
+    box-sizing: border-box; /* Ensure padding and border are included in width calculation */
+    overflow: auto; /* Enable scrolling for content overflow */
+}
+
+.highlight-label {
+    color: #888;
+    font-size: 10px;
+    margin-top: auto; /* Push the label to the bottom */
+}
+
+.student-details {
+    position: relative;
+    background-color: white;
+    border-radius: 8px;
+    padding: 5px 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.student-cards-container {
+    display: flex;
+    overflow: hidden;
+    width: 100%; /* Set a fixed width */
+    max-width: 1000px; /* Optional: Set a maximum width to avoid excessive stretching */
+}
+
+.student-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 5px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex: 0 0 100px;
+    margin-right: 10px;
+    font-size: 12px;
+}
+
+.student-card:last-child {
+    margin-right: 0;
+}
+
+.student-cards-container_highlight {
+    display: flex;
+    overflow: hidden;
+    width: 100%; /* Set a fixed width */
+    max-height: 1000px;
+    max-width: 100px;
+}
+
+/* .student-cards-container_highlight {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    max-width: 100%;
+    margin: 0 auto;
+} */
+
+.student-card_highlight {
+    background-color: white;
+    border-radius: 8px;
+    /* padding: 5px; */
+    text-align: center;
+    /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
+    flex: 0 0 100px;
+    /* margin-right: 10px; */
+    font-size: 12px;
+}
+
+.student-card-pic_highlight {
+    width: 50px; /* Fixed width for profile picture */
+    height: 50px; /* Fixed height for profile picture */
+    border-radius: 50%; /* Circular profile picture */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    object-fit: cover; /* Ensure image covers the container */
+    /* margin-right: 10px; Space between the picture and the vertical line */
+    margin-top: 10px;
+}
+
+.student-card-name_highlight {
+    margin-right: 5px; /* Space between the name and the vertical line */
+}
+
+.vertical-line {
+    width: 1px; /* Width of the vertical line */
+    height: 40px; /* Adjust height as needed */
+    background-color: #ccc; /* Color of the line */
+}
+
+.student-card-info_highlight {
+    margin-left: 8px; /* Space between the vertical line and the additional info */
+    font-size: 9px;
+    text-align: center;
+}
+
+.name, .rate, .mark {
+    margin: 0; /* Remove default margin to further reduce spacing */
+    padding: 0; /* Remove any padding */
+}
+
+.student-card_highlight:last-child {
+    margin-right: 0;
+}
+
+.student-card-info_highlight hr {
+    margin: 5px auto; /* Adjust the margin as needed */
+    width: 50%; /* Adjust the width of the line */
+    border: none;
+    border-top: 1px solid #ccc; /* Adjust the color of the line */
+}
+
+.student-card hr {
+    margin: 5px auto; /* Adjust the margin as needed */
+    width: 50%; /* Adjust the width of the line */
+    border: none;
+    border-top: 1px solid #ccc; /* Adjust the color of the line */
+}
+
+.student-cards-wrapper {
+    display: flex;
+    overflow-x: auto; /* Changed from hidden to auto to allow scrolling */
+    scroll-behavior: smooth;
+    width: 100%; /* Adjust width to accommodate the scroll buttons */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+
+    /* Hide scrollbar for Webkit-based browsers (Chrome, Safari) */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.scroll-button {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 3px;
+    height: 40px;
+    position: absolute;
+}
+
+#scrollLeft {
+    left: 0; /* Position left button at the left edge */
+}
+
+#scrollRight {
+    right: 0; /* Position right button at the right edge */
+}
+
+.navigation-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.navigation-button.left {
+    left: 0;
+}
+
+.navigation-button.right {
+    right: 0;
+}
+
+.gender_Button {
+    width: 80px; /* Fixed width */
+    height: 30px; /* Fixed height */
+    font-size: 16px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    background-color: grey; /* Initial color for "Nothing" state */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px #999;
+}
+.gender_Button:hover {
+    color: #1c1d52;
+}
+.gender_Button:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(2px);
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    .student-card {
+        flex: 0 0 calc(100% - 20px);
+    }
+
+}
