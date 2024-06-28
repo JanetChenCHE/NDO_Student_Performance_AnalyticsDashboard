@@ -760,7 +760,7 @@ function updateChart_teacher(selectedYear, selectedteacher, selectedCohort, swit
             const data1_objectName = object_data_loadfile1.objectData;
             const English = data1_objectName.find(student => student.teacher === selectedteacher);
             // Chart
-            if(English) {
+            if(English && selectedteacher) {
                 temp_cohort = min_max_fiveYear_cohort.current;
                 // console.log(temp_cohort);
                 const fileName2 = `./datasets_csv/KPI_(C${temp_cohort - 1})_${selectedYear}_English_KPIs.csv`;
@@ -776,7 +776,7 @@ function updateChart_teacher(selectedYear, selectedteacher, selectedCohort, swit
                     populateInfo_teacher(toProperCase(selectedteacher), 'English Teacher');
                 });
             }
-            else { // Squash
+            else if(selectedteacher) { // Squash
                 object_data_loadfile3.loadNparseCSV(fileName3, selectedYear, () => {
                     const data3 = object_data_loadfile3.parsedData;
                     const data3_objectName = object_data_loadfile3.objectData;
@@ -892,6 +892,7 @@ function updateChart_teacher(selectedYear, selectedteacher, selectedCohort, swit
 }
 
 function deleteChart_teacher() {
+    document.querySelector('.teacher_info').innerHTML = '';
     object_linechart_att.deleteLineChart('#line_chart_att_teacher');
     object_linechart_teacher.deleteLineChart();
     object_stackedbarchart_teacher.deleteStackedBarChart_teacher("#stacked_bar_chart_teacher");
