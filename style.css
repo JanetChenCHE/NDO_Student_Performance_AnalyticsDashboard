@@ -130,6 +130,10 @@ caption {
     height: calc(100% - 50px); /* Adjust height to account for topnav */
     overflow: auto;
     z-index: 500; /* Ensure it is below the topnav */
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .sidebar_pic {
