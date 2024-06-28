@@ -82,8 +82,8 @@ const areObjectsEqual = (obj1, obj2) => {
 
 // Button on the donut chart for total student
 const button = document.getElementById('genderButton');
-const states = ['Default', 'Male', 'Female'];
-const colors = ['grey', '#89CFF0', '#F4C2C2'];
+const states = ['Male', 'Default', 'Female'];
+const colors = ['#89CFF0', 'grey', '#F4C2C2'];
 let currentIndex = 0;
 
 function getButtonState() {
@@ -776,13 +776,15 @@ function mostImprovedStudent_att(chosenYear, chosenCohort) {
     }
 }
 
-function handleButtonClick(chosenYear, chosenCohort) {
+function handleButtonClick() {
+    const selectedYear = document.getElementById('select-year').value;
+    const selectedCohort = document.getElementById('select-cohort').value;
     currentIndex = (currentIndex + 1) % states.length;
     button.textContent = states[currentIndex];
     button.style.backgroundColor = colors[currentIndex];
     const gender = getButtonState();
     // Regenerate chart based on updated gender state
-    chart_classStudentCount(chosenYear, chosenCohort, gender);
+    chart_classStudentCount(selectedYear, selectedCohort, gender);
 }
 
 function chart_classStudentCount(chosenYear, chosenCohort, selectedGender) {
@@ -1000,10 +1002,7 @@ function updateDashboard() {
     change_numberOFstudent(selectedYear, selectedCohort);
     change_KPI(selectedYear, selectedCohort, 'English', 'changeEnglishKPI');
     change_KPI(selectedYear, selectedCohort, 'Squash', 'changeSquashKPI');
-    handleButtonClick(selectedYear, selectedCohort);
-    button.addEventListener('click', () => {
-        handleButtonClick(selectedYear, selectedCohort);
-    });
+    handleButtonClick();
     updateKPI('English');
     updateKPI('Squash');
     // chart_KPI(selectedYear, selectedCohort, 'English', '#barchart_EnglishKPIs');
@@ -1115,6 +1114,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Call updateDashboard when the selectors change
     document.getElementById('select-year').addEventListener('change', updateDashboard);
     document.getElementById('select-cohort').addEventListener('change', updateDashboard);
+
+    
+    // handleButtonClick(selectedYear, selectedCohort);
+    
+    button.addEventListener('click', () => {
+        handleButtonClick();
+    });
 
     const button_english = document.getElementById('allYear_English');
     const button_squash = document.getElementById('allYear_Squash');
