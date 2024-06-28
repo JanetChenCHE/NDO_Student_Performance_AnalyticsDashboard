@@ -2,6 +2,12 @@ class DropDownMenu {
     //constructor
     
     //method
+    toProperCase(str) {
+        return str.toLowerCase().replace(/(?:^|\s|\/)\w/g, (match) => {
+            return match.toUpperCase();
+        });
+    }
+
     populateSelection(id, data, valueChoice) {
         const selectElement = document.getElementById(id);
     
@@ -16,13 +22,14 @@ class DropDownMenu {
         
         // Extract unique values, filter out "-", and sort them alphabetically
         const uniqueValues = [...new Set(data.map(item => item[valueChoice]))]
-            .filter(value => value !== "-" && !value.includes('/'))
+            // .filter(value => value !== "-" && !value.includes('/'))
             .sort();
     
         // Add sorted options to the dropdown
+        //
         uniqueValues.forEach(value => {
             const option = document.createElement('option');
-            option.text = value;
+            option.text = this.toProperCase(value);
             option.value = value;
             selectElement.appendChild(option);
         });
