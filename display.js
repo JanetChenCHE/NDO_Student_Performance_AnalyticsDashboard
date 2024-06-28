@@ -510,6 +510,7 @@ function filterAndAddNames(dataset, selectedteacher) {
 import { generateChart_TeacherPerformacneDashboard } from './display_attendance.js';
 
 function populateInfo_teacher(name, programme) {
+    // console.log(programme);
     let programme_pic;
     let measurement_table;
     if (programme === 'English Teacher') {
@@ -570,120 +571,6 @@ function populateInfo_teacher(name, programme) {
     document.querySelector('.teacher_info').innerHTML = personalInfo;
 }
 
-// function processDataRows(dataRows, data, dataHeaders) {
-//     // console.log(dataRows);
-//     for (let a = 0; a < dataRows.length; a++) {
-//         let array_row = [];
-//         for (let i = 0; i < dataRows[0].length; i++) {
-//             const month = dataRows[0][i];
-//             const header = dataRows[1][i];
-
-//             if (month === '') {
-//                 array_row.push(dataRows[a][i]);
-//             } else {
-//                 let found = false;
-//                 for (let j = 0; j < data[0].length; j++) {
-//                     // console.log(found);
-//                     const month_refer = data[0][j];
-//                     const header_refer = data[1][j];
-//                     // console.log(header_refer, '===', header);
-//                     // console.log(month_refer, '===', month);
-
-//                     if (month_refer === month && header_refer === header) {
-//                         array_row.push(dataRows[a][i]);
-//                         found = true;
-//                         // console.log(header_refer, '===', header);
-//                         // console.log(month_refer, '===', month);
-//                         break;
-//                     }
-//                 }
-//                 if (!found) {
-//                     array_row.push("#DIV/0!");
-//                     // console.log('dnd');
-//                 }
-//             }
-//         }
-//         data.push(array_row);
-//     }
-//     console.log(data);
-// }
-let a;
-
-// function processDataRows(dataRows, data, dataHeaders) {
-//     for(let i=0; i<data[0].length; i++) { // data
-//         const month_refer = data[0][i];
-//         const header_refer = data[1][i];
-//         // console.log(month, header);
-//         for(let p=0; p<dataRows.length; p++){ //dataRows - row
-//             let found = false;
-//             let month;
-//             let header;
-//             for(let q=0; q<dataRows[0].length; q++) { // dataRows - column
-//                 month = dataRows[0][q];
-//                 header = dataRows[1][q];
-//                 if (month === '') {
-//                     // array_row.push(dataRows[a][i]);
-//                 } else {
-//                     // console.log(month,header);
-//                     if(month_refer === month && header_refer === header) {
-//                         // array_row.push(dataRows[p][q]);
-//                         console.log(month, header, dataRows[p][q]);
-//                         found = true;
-//                         // console.log(header_refer, '===', header);
-//                         // console.log(month_refer, '===', month);
-//                         break;
-//                     }
-//                 }
-//             }
-//             if (!found) {
-//                 // array_row.push("#DIV/0!");
-//                 console.log(month, header, "#DIV/0!");
-//             }
-//         }
-//     }
-//     console.log(data);
-// }
-let b;
-// function processDataRows(dataRows, data) {
-//     // console.log(month_referRow, header_referRow);
-//     for(let i=2; i<dataRows.length; i++) {
-//         let array_row = [];
-//         for(let a=0; a<data[0].length; a++) {
-//             let found = false;
-//             let month = '';
-//             let header = '';
-//             let value = '';
-//             const month_refer = data[0][a];
-//             const header_refer = data[1][a];
-//             for(let j=0; j<dataRows[0].length; j++) {
-//                 month = dataRows[0][j];
-//                 header = dataRows[1][j];
-//                 if (month === '') {
-//                     value = dataRows[i][j];
-//                     found = true;
-//                     break;
-//                 } else {
-//                     if (month_refer === month && header_refer === header) {
-//                         value = dataRows[i][j];
-//                         found = true;
-//                         break;
-//                     }
-//                 }
-//             }
-//             if (found) {
-//                 array_row.push(value);
-//                 // console.log('dnd');
-//             }
-//             else {
-//                 array_row.push("#DIV/0!");
-//             }
-            
-//         }
-        
-//         data.push(array_row);
-//     }
-//     console.log(data);
-// }
 function processDataRows(dataRows, data) {
     for (let i = 2; i < dataRows.length; i++) {
         let array_row = [];
@@ -711,8 +598,6 @@ function processDataRows(dataRows, data) {
     }
     // console.log(data);
 }
-
-
 
 function updateChart_teacher(selectedYear, selectedteacher, selectedCohort, switch_showLable) {
     // Delete current chart
@@ -901,24 +786,13 @@ function deleteChart_teacher() {
 function updateDashboard() {
 
     // Student Performance Dashboard
-    const switch_studentPerformance = document.getElementById('switch_studentPerformance').checked;
-    const selectedYear1 = document.getElementById('year_student_line').value;
-    const selectedStudent = document.getElementById('studentSelect').value;
-    updateChart(selectedYear1, selectedStudent, switch_studentPerformance);
+    updateStudentPerformanceDashboard();
 
     // Class Performance Dashboard
-    const switch_classPerformance = document.getElementById('switch_classPerformance').checked;
-    const selectedClass = document.getElementById('classSelect').value;
-    const selectedCohort1 = document.getElementById('cohortSelect').value;
-    const selectedYear2 = document.getElementById('year_class').value;
-    updateChart_class(selectedClass, selectedCohort1, selectedYear2, switch_classPerformance);
+    updateClassPerformanceDashboard();
 
     // Teacher Performance Dashboard
-    const switch_teacherPerformance = document.getElementById('switch_teacherPerformance').checked;
-    const selectedYear3 = document.getElementById('year_teacher').value;
-    const selectedteacher = document.getElementById('teacherSelect').value;
-    const selectedCohort2 = document.getElementById('cohortSelect_teacher').value;
-    updateChart_teacher(selectedYear3, selectedteacher, selectedCohort2, switch_teacherPerformance);
+    updateTeacherPerformanceDashboard();
 
 }
 
