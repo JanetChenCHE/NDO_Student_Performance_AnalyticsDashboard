@@ -422,6 +422,7 @@ function updateChart(selectedYear, selectedStudent, switch_showLable) {
 }
 
 function deleteChart () {
+    document.querySelector('.personal_info').innerHTML = '';
     object_linechart.deleteLineChart();
     object_linechart.deleteLineChart_yearly();
     object_stackedbarchart.deleteStackedBarChart("#stacked_bar_chart_english", "#stacked_bar_chart_squash");
