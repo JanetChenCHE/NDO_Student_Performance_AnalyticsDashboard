@@ -6,6 +6,12 @@ class DropDownMenu_array {
     }
 
     // Method to populate the dropdown
+    toProperCase(str) {
+        return str.toLowerCase().replace(/(?:^|\s|\/)\w/g, (match) => {
+            return match.toUpperCase();
+        });
+    }
+
     populateSelection(defaultValue = null) {
         const selectElement = document.getElementById(this.id);
 
@@ -23,12 +29,12 @@ class DropDownMenu_array {
             .filter(value => value !== "-" && !value.includes('/'))
             .sort();
 
-        console.log(uniqueValues);
+        // console.log(uniqueValues);
 
         // Add sorted options to the dropdown
         uniqueValues.forEach(value => {
             const option = document.createElement('option');
-            option.text = value;
+            option.text = this.toProperCase(value);
             option.value = value;
             selectElement.appendChild(option);
         });
