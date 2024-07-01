@@ -50,6 +50,9 @@ let currentYear = 0;
 if(getCurrenMonth < 7) {
     currentYear = getCurrentYear - 1; 
 }
+else {
+    currentYear = getCurrentYear;
+}
 
 // ==============================================================================================
 // Dropdown Menu - Teacher Name
