@@ -1,4 +1,4 @@
-
+import { File } from './js/dataCleaning/file.js';
 import { DATABASE_LOADFILE } from './js/loadFile/database.js';
 import { DATA_LOADFILE } from './js/loadFile/data.js';
 import { DATACLEANING } from './js/dataCleaning/dataCleaning.js';
@@ -16,6 +16,7 @@ import { STACKEDBARCHART_TEACHER } from './js/d3/stackedBarChart_teacher.js';
 import { LINEARREGRESSION_PREDICTION } from './js/analysis/linearRegression_Prediction.js';
 
 //object
+const object_file = new File();
 const object_database_loadfile = new DATABASE_LOADFILE();
 const object_data_cleaning = new DATACLEANING();
 const object_array_monthly_EachStudent = new array_monthly_EachStudent();
@@ -90,22 +91,25 @@ for(let i=0; i<max_fiveYear_cohort.length; i++) {
     allFileName_teacher.push(fileName2);
 }
 
-// populate the menu
-const objects = allFileName_teacher.map(() => new DATA_LOADFILE());
-
-const loadAndParse = (index) => {
-    if (index < allFileName_teacher.length) {
-        objects[index].loadNparseCSV(allFileName_teacher[index], getCurrenMonth, () => {
-            pushTeacherNames(objects[index].objectData);
-            loadAndParse(index + 1);
-        });
-    } else {
-        const object_dropDownMenu_array = new DropDownMenu_array('teacherSelect', teacherNAME);
-        object_dropDownMenu_array.populateSelection();
-    }
-};
-
-loadAndParse(0);
+object_file.loadMultipleCSVs(allFileName_teacher, (successfulFiles) => {
+    // populate the menu
+    const objects = successfulFiles.map(() => new DATA_LOADFILE());
+    
+    const loadAndParse = (index) => {
+        if (index < successfulFiles.length) {
+            objects[index].loadNparseCSV(successfulFiles[index], getCurrenMonth, () => {
+                // console.log(objects[index]);
+                pushTeacherNames(objects[index].objectData);
+                loadAndParse(index + 1);
+            });
+        } else {
+            const object_dropDownMenu_array = new DropDownMenu_array('teacherSelect', teacherNAME);
+            object_dropDownMenu_array.populateSelection();
+        }
+    };
+    
+    loadAndParse(0);
+});
 
 // ==============================================================================================
 //Function: Generate Chart
