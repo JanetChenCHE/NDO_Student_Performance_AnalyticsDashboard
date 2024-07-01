@@ -9,14 +9,35 @@ class File {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
-                    callback(xhr.responseText);
+                    callback(xhr.responseText, file);
                 } else {
-                    console.error('Failed to load CSV file');
+                    console.error('Failed to load CSV file, using default data.');
+                    callback(null, null); // or provide some default data like callback('default,values,here');
                 }
             }
         };
         xhr.open('GET', file, true);
         xhr.send();
+    }
+
+    loadMultipleCSVs(files, allDoneCallback) {
+        let successfulFiles = [];
+        let remaining = files.length;
+    
+        files.forEach((file) => {
+            this.loadCSV(file, (text, filename) => {
+                if (filename) {
+                    successfulFiles.push(filename); // Store the successfully loaded file name
+                    // console.log(file);
+                }
+    
+                remaining -= 1;
+    
+                if (remaining === 0) {
+                    allDoneCallback(successfulFiles); // All files processed, call the final callback with successful files
+                }
+            });
+        });
     }
 
     // Function to parse CSV data
