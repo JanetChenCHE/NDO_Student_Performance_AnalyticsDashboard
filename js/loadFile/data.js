@@ -15,6 +15,7 @@ class DATA_LOADFILE {
         let dataStore = [];
         if(Number(year) === 2022) {
             object_file.loadCSV(file, (csvData) => {
+                // console.log(file);
                 const data = object_file.parseCSV(csvData);
                 this.parsedData = data;
                 

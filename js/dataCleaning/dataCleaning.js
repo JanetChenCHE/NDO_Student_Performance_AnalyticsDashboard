@@ -127,6 +127,68 @@ class DATACLEANING {
         return new_data;
     }
 
+    makeArray_selectedStudent (data, selectedStudent) {
+        const toProperCase = (str) => {
+            return str.toLowerCase().replace(/(?:^|\s|\/)\w/g, (match) => {
+                return match.toUpperCase();
+            });
+        };
+        let new_data = [];
+        let new_data_array = ['Month'];
+        let currentMonth;
+        let preMonth = '';
+
+        const uniqueValues = new Set();
+
+        // This loop fills in the header (unique) for the new_data array
+        for (let i = 2; i < data[1].length; i++) {
+            if (!uniqueValues.has(data[1][i])) {
+                uniqueValues.add(data[1][i]);
+                new_data_array.push(data[1][i]);
+            }
+        }
+        new_data.push(new_data_array); // Push header row
+        new_data_array = [];
+
+        // This loop fills in the first column, which is months
+        for (let i = 0; i < data[2].length; i++) {
+            currentMonth = data[0][i];
+            if (preMonth === '') {
+                preMonth = currentMonth;
+            } else if (preMonth !== currentMonth && preMonth !== '') {
+                new_data_array.push(toProperCase(preMonth));
+                preMonth = currentMonth;
+                new_data.push(new_data_array);
+                new_data_array = [];
+            } else if (i === data[2].length - 1) {
+                new_data_array.push(toProperCase(preMonth));
+                new_data.push(new_data_array);
+                new_data_array = [];
+            }
+        }
+
+        // This loop fills in the values in the new_data array
+        for(let a=0; a<data.length;a++) {//check student in which row
+            if(data[a][1].toUpperCase().trim() === selectedStudent) {
+                for (let i = 0; i < data[0].length; i++) {
+                    const key = data[1][i]; // Get the key
+                    const values = data[a][i]; // Get the value
+                    for (let k = 0; k < new_data.length; k++) {
+                        if ((new_data[k][0]).toUpperCase() === data[0][i]) { // Match month
+                            for (let j = 0; j < new_data[0].length; j++) {
+                                if (new_data[0][j] === key) { // Match key
+                                    new_data[k][j] = values; // Fill in the value
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return new_data;
+    }
+
     removeColumn_OS(data) { 
         // Find the index of the column to remove
         const columnIndex = data[0].indexOf('OS');

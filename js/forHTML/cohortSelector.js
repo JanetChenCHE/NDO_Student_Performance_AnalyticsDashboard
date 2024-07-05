@@ -3,6 +3,7 @@ const first = {cohort: 1, year: 2022};
 const selectCohort = document.getElementById('select-cohort');
 const selectCohort_factor_analysis = document.getElementById('select-cohort_factor_analysis');
 const cohortSelect_attendance = document.getElementById('cohortSelect_attendance');
+const PDFselectCohort = document.getElementById('cohort');
 
 // Function to add options to a select element
 const addOptions = (selectElement, startCohort, endCohort, selectedCohort) => {
@@ -44,3 +45,8 @@ if (minYear < first.year) {
     addDefaultOption(cohortSelect_attendance);
     addOptions(cohortSelect_attendance, minCohort, currentCohort, null);
 }
+
+
+const difference = currentYear - first.year;
+const currentCohort = first.cohort + difference;
+addOptions(PDFselectCohort, first.cohort, currentCohort, first.cohort);

@@ -1,11 +1,9 @@
 
 import { DropDownMenu } from './js/forHTML/dropDownMenu.js';
 import { ATTENDANCE_LOADFILE } from './js/loadFile/attendance.js';
-import { LINECHART_ATT_GENDER } from './js/d3/lineChart_att_gender.js';
 import { LINECHART_ATT } from './js/d3/lineChart_att.js';
 
 //object 
-const object_linechart_att_gender = new LINECHART_ATT_GENDER();
 const object_linechart_att = new LINECHART_ATT();
 
 const first = {cohort: 1, year: 2022};
@@ -13,19 +11,18 @@ const currentYear = new Date().getFullYear();
 const difference = currentYear - first.year;
 const cohort_current = first.cohort + difference;
 
-
-const loadAndParseCSV = (fileName) => {
-    return new Promise((resolve, reject) => {
+const loadAndParseCSV = async(fileName) => {
+    return new Promise(async (resolve, reject) => {
         try {
             const obj = new ATTENDANCE_LOADFILE();
-            obj.loadNparseCSV(fileName, () => {
-                resolve(obj.objectData_year_month);
-            });
+            await obj.loadNparseCSV_async(fileName);
+            resolve(obj.objectData_year_month);
         } catch (error) {
             reject(`Error loading or parsing CSV file ${fileName}: ${error}`);
         }
     });
 };
+
 
 // If the attendance record file is store as every year, this code is functionable
 // ELSE, dont use this code
@@ -69,37 +66,34 @@ const loadAllFiles = async () => {
     combinedData = uniqueData;
 };
 
-// Populate the dropdown Menu in "html"
-// Call the async function and populate the class in attendance dashboard
-loadAllFiles().then(() => {
-    const object_dropDownMenu = new DropDownMenu();
-    object_dropDownMenu.populateSelection('classSelect_att', combinedData, 'class');
-    // console.log(combinedData);
-});
-
 
 // Generate Chart
-function generateChart(selectedYear, selectedCohort, selectedClass, switch_showLable){
+export function generateChart(selectedYear, id, switch_showLable){
     loadAllFiles().then(() => {
-        processDataAndGenerateReports_NDO(combinedData, selectedYear, switch_showLable);
-        processDataAndGenerateReports_class(combinedData, selectedYear, selectedCohort, selectedClass, switch_showLable);
+        processDataAndGenerateReports_NDO(combinedData, selectedYear, id, switch_showLable);
+    });
+}
+export function generateAttChart_class(selectedYear, selectedCohort, selectedClass, id, switch_showLable){
+    loadAllFiles().then(() => {
+        processDataAndGenerateReports_class(combinedData, selectedYear, selectedCohort, selectedClass, id, switch_showLable);
     });
 }
 
-export function generateChart_StudentPerformacneDashboard(selectedYear, selectedStudent, switch_showLable) {
+export function generateChart_StudentPerformacneDashboard(selectedYear, selectedStudent, id, switch_showLable) {
+    // console.log(combinedData);
     loadAllFiles().then(() => {
-        processDataAndGenerateReports_SPECIFICstudent(combinedData, selectedYear, selectedStudent, switch_showLable);
+        processDataAndGenerateReports_SPECIFICstudent(combinedData, selectedYear, selectedStudent, id, switch_showLable);
     });
 }
 
-export function generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, studentName_array, switch_showLable){
+export function generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, studentName_array, id, switch_showLable){
     // console.log(switch_showLable);
     loadAllFiles().then(() => {
-        processDataAndGenerateReports_student(combinedData, selectedYear, selectedteacher, studentName_array, switch_showLable);
+        processDataAndGenerateReports_student(combinedData, selectedYear, selectedteacher, studentName_array, id, switch_showLable);
     });
 }
 
-function processDataAndGenerateReports_NDO(data, selectedYear, switch_showLable) {
+function processDataAndGenerateReports_NDO(data, selectedYear, id, switch_showLable) {
     // Data cleaning
     const newDataArray = data;
 
@@ -132,11 +126,14 @@ function processDataAndGenerateReports_NDO(data, selectedYear, switch_showLable)
     });
 
     // make chart
-    object_linechart_att.loadLineChart(monthlyAverages, '#line_chart_att_NDO', switch_showLable);
+    object_linechart_att.loadLineChart(monthlyAverages, id, switch_showLable);
+
+    
+    return(monthlyAverages);
 
 }
 
-function processDataAndGenerateReports_class(data, selectedYear, selectedCohort, selectedClass, switch_showLable) {
+function processDataAndGenerateReports_class(data, selectedYear, selectedCohort, selectedClass, id, switch_showLable) {
     // Data cleaning
     const newDataArray = data;
 
@@ -281,10 +278,11 @@ function processDataAndGenerateReports_class(data, selectedYear, selectedCohort,
     });
 
     // Output the filtered data
-    object_linechart_att.loadLineChart(resultArray, '#line_chart_att_class', switch_showLable);
+    object_linechart_att.loadLineChart(resultArray, id, switch_showLable);
+    return (resultArray);
 }
 
-function processDataAndGenerateReports_student(data, selectedYear, selectedteacher, array_student, switch_showLable) {
+function processDataAndGenerateReports_student(data, selectedYear, selectedteacher, array_student, id, switch_showLable) {
     // Data cleaning
     const newDataArray = data;
 
@@ -379,10 +377,13 @@ function processDataAndGenerateReports_student(data, selectedYear, selectedteach
     });
 
     // Output the filtered data
-    object_linechart_att.loadLineChart(resultArray, '#line_chart_att_teacher', switch_showLable);
+    // console.log(resultArray);
+    object_linechart_att.loadLineChart(resultArray, id, switch_showLable);
+    
+    return(resultArray);
 }
 
-function processDataAndGenerateReports_SPECIFICstudent(data, selectedYear, selectedStudent, switch_showLable) {
+function processDataAndGenerateReports_SPECIFICstudent(data, selectedYear, selectedStudent, id, switch_showLable) {
     // Data cleaning
     const newDataArray = data;
 
@@ -432,9 +433,12 @@ function processDataAndGenerateReports_SPECIFICstudent(data, selectedYear, selec
     selectedStudentAverages.forEach(item => {
         resultArray.push([item.month, item.name, item.presenceRate]);
     });
+    // console.log(resultArray);
 
     // Output the filtered data
-    object_linechart_att.loadLineChart(resultArray, '#line_chart_att_student', switch_showLable);
+    object_linechart_att.loadLineChart(resultArray, id, switch_showLable);
+
+    return(resultArray);
 }
 
 function deleteCurrentChart() {
@@ -452,7 +456,8 @@ function update() {
     const switch_showLable = document.getElementById('switch_attendancePerformance').checked;
 
     // Call the function to generate the chart
-    generateChart(selectedYear, selectedCohort, selectedClass, switch_showLable);
+    generateChart(selectedYear, "#line_chart_att_NDO", switch_showLable);
+    generateAttChart_class(selectedYear, selectedCohort, selectedClass, "#line_chart_att_class", switch_showLable);
 
 }
 

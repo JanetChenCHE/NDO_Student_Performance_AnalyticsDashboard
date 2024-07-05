@@ -39,6 +39,7 @@ class File {
             });
         });
     }
+    
 
     // Function to parse CSV data
     parseCSV(csvData, options = {}) {

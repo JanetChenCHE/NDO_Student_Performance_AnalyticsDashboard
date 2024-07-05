@@ -111,11 +111,12 @@ object_file.loadMultipleCSVs(allFileName_teacher, (successfulFiles) => {
     loadAndParse(0);
 });
 
+
 // ==============================================================================================
 //Function: Generate Chart
 function generateChart(data_English, data_Squash, switch_showLable) {
     //Line Chart
-    object_linechart.loadLineChart(data_English, data_Squash, switch_showLable);
+    object_linechart.loadLineChart(data_English, data_Squash, "#line_chart", switch_showLable);
     //Stacked bar Chart
     const array_data_English = object_data_cleaning.removeColumn_OS(object_data_cleaning.makeArrayNoObject(data_English));
     const array_data_Squash = object_data_cleaning.removeColumn_OS(object_data_cleaning.makeArrayNoObject(data_Squash));
@@ -129,23 +130,23 @@ function generateChart_teacher(data, namesArray, switch_showLable) {
     // Stacked Bar Chart (selected cohort)
     object_stackedbarchart_teacher.loadStackedBarChart(new_mean_array, "#stacked_bar_chart_teacher", switch_showLable);
     // Line Chart (Selected cohort)
-    object_linechart_teacher.loadLineChart_selectedCohort(mean_array, switch_showLable);
+    object_linechart_teacher.loadLineChart_selectedCohort(mean_array, '#line_chart_teacher_selectedCohort', switch_showLable);
 
 }
 
-function generateChart_class(data1, data2, selectedClass, switch_showLable) {
+function generateChart_class(data1, data2, selectedClass, id_eng, id_squa, id_aveKPI, switch_showLable) {
     // arrange data
     const mean_array_eng = object_array_mean_for_month.countMean(data1, selectedClass);
     const mean_array_squa = object_array_mean_for_month.countMean(data2,selectedClass);
     const new_mean_array_eng = object_data_cleaning.removeColumn_OS(object_data_cleaning.makeArrayNoObject2(mean_array_eng));
     const new_mean_array_squa = object_data_cleaning.removeColumn_OS(object_data_cleaning.makeArrayNoObject2(mean_array_squa));
     //graph
-    object_stackedbarchart_class.loadStackedBarChart(new_mean_array_eng, "#stacked_bar_chart_class_english", switch_showLable);
-    object_stackedbarchart_class.loadStackedBarChart(new_mean_array_squa, "#stacked_bar_chart_class_squash", switch_showLable);
-    object_linechart_class.loadLineChart(mean_array_eng, mean_array_squa, switch_showLable);
+    object_stackedbarchart_class.loadStackedBarChart(new_mean_array_eng, id_eng, switch_showLable);
+    object_stackedbarchart_class.loadStackedBarChart(new_mean_array_squa, id_squa, switch_showLable);
+    object_linechart_class.loadLineChart(mean_array_eng, mean_array_squa, id_aveKPI, switch_showLable);
 }
 
-function findStudentInCohort(filename1, filename2, year, selectedStudent, callback) {
+export function findStudentInCohort(filename1, filename2, year, selectedStudent, callback) {
 
     const object_data_loadfile1 = new DATA_LOADFILE();
     const object_data_loadfile2 = new DATA_LOADFILE();
@@ -186,7 +187,7 @@ export function calculation_chosenYear_value_oneLine(data, object) {
     return average;
 }
 
-async function chart_forecasting(selectedStudent, cohort) {
+export async function chart_forecasting(selectedStudent, cohort, id) {
     let array1 = [];
 
     const year_new_cohort = object_count_cohort_in_which_year.cohort_startyear_endyear(cohort);
@@ -212,60 +213,68 @@ async function chart_forecasting(selectedStudent, cohort) {
 
             } catch (error) {
                 console.error(`Error processing year ${temp_year}:`, error);
-                array1.push([temp_year, NaN]);
-                console.log(`Fallback data for year ${temp_year}`, { english: array });
+                array1 = null;
+                console.log(`Fallback data for year ${temp_year}`, { english: array1 });
             }
         } else {
             array1.push([temp_year, NaN]);
         }
     }
 
-    // Predicting NaN values for English and squash data
-    const array1_forecast = object_linear_regression_prediction.predictNaNValues(array1);
-
-    // Chart
-    object_linechart.loadLineChart_yearly(array1_forecast);
+    if(array1){
+        // Predicting NaN values for English and squash data
+        const array1_forecast = object_linear_regression_prediction.predictNaNValues(array1);
+    
+        // Chart
+        object_linechart.loadLineChart_yearly(array1_forecast, id);
+    }
 }
 
 
 // ==============================================================================================
 // Student Performance Dashboard
 
-function loadAndGenerateGraph_for_2022(programme1, programme2, chosenYear, chosenCohort, callback) {
+export async function loadAndGenerateGraph_for_2022(programme1, programme2, chosenYear, chosenCohort, selectedStudent, id_eng, id_squa, switch_showLable) {
     const cohortNum = parseInt(chosenCohort.replace("COHORT", ""));
     const object_data_loadfile1 = new DATA_LOADFILE();
     const fileName1 = `./datasets_csv/KPI_(C${cohortNum})_${chosenYear}_${programme1}_KPIs.csv`;
     const object_data_loadfile2 = new DATA_LOADFILE();
     const fileName2 = `./datasets_csv/KPI_(C${cohortNum})_${chosenYear}_${programme2}_KPIs.csv`;
 
-    object_data_loadfile1.loadNparseCSV(fileName1, chosenYear, () => {
-        const data1 = object_data_loadfile1.parsedData;
-        // Data Cleaning: change the last occurence "OCTOBER" to "NOVEMBER"
-        const monthRow1 = data1[0].slice(2).map(month => month.split(' ')[0].toUpperCase()); // First row containing the month data, accessing the third element
-        const lastIndexOct = monthRow1.lastIndexOf("OCTOBER");
-        if (lastIndexOct !== -1) {
-            monthRow1[lastIndexOct] = "NOVEMBER";
-        }
-        data1[0] = data1[0].slice(0, 2).concat(monthRow1); // Replace the remaining space with the updated monthRow1
+    await object_data_loadfile1.loadNparseCSV_async(fileName1, chosenYear);
+    const data1 = object_data_loadfile1.parsedData;
+    // Data Cleaning: change the last occurence "OCTOBER" to "NOVEMBER"
+    const monthRow1 = data1[0].slice(2).map(month => month.split(' ')[0].toUpperCase()); // First row containing the month data, accessing the third element
+    const lastIndexOct1 = monthRow1.lastIndexOf("OCTOBER");
+    if (lastIndexOct1 !== -1) {
+        monthRow1[lastIndexOct1] = "NOVEMBER";
+    }
+    data1[0] = data1[0].slice(0, 2).concat(monthRow1); // Replace the remaining space with the updated monthRow1
 
-        object_data_loadfile2.loadNparseCSV(fileName2, chosenYear, () => {
-            const data2 = object_data_loadfile2.parsedData;
-            // Data Cleaning: change the last occurence "OCTOBER" to "NOVEMBER"
-            const monthRow2 = data2[0].slice(2).map(month => month.split(' ')[0].toUpperCase()); // First row containing the month data, accessing the third element
-            const lastIndexOct = monthRow2.lastIndexOf("OCTOBER");
-            if (lastIndexOct !== -1) {
-                monthRow2[lastIndexOct] = "NOVEMBER";
-            }
-            data2[0] = data2[0].slice(0, 2).concat(monthRow2); // Replace the remaining space with the updated monthRow2
-        
-            const new_data1 = object_array_monthly_EachStudent.arrageArray_returnWithoutObject(data1);
-            const nnew_data1 = object_array_monthly_EachStudent.replaceNaNWithMean(new_data1);
-            const new_data2 = object_array_monthly_EachStudent.arrageArray_returnWithoutObject(data2);
-            const nnew_data2 = object_array_monthly_EachStudent.replaceNaNWithMean(new_data2);
-    
-            callback(nnew_data1, nnew_data2);
-        });
-    });
+    await object_data_loadfile2.loadNparseCSV_async(fileName2, chosenYear);
+    const data2 = object_data_loadfile2.parsedData;
+    // Data Cleaning: change the last occurence "OCTOBER" to "NOVEMBER"
+    const monthRow2 = data2[0].slice(2).map(month => month.split(' ')[0].toUpperCase()); // First row containing the month data, accessing the third element
+    const lastIndexOct2 = monthRow2.lastIndexOf("OCTOBER");
+    if (lastIndexOct2 !== -1) {
+        monthRow2[lastIndexOct2] = "NOVEMBER";
+    }
+    data2[0] = data2[0].slice(0, 2).concat(monthRow2); // Replace the remaining space with the updated monthRow2
+
+    const new_data1 = object_array_monthly_EachStudent.arrageArray_returnWithoutObject(data1);
+    const nnew_data1 = object_array_monthly_EachStudent.replaceNaNWithMean(new_data1);
+    const new_data2 = object_array_monthly_EachStudent.arrageArray_returnWithoutObject(data2);
+    const nnew_data2 = object_array_monthly_EachStudent.replaceNaNWithMean(new_data2);
+
+    // Chart
+    const nnnew_data1 = object_data_cleaning.makeArrayWithoutOS_selectedStudent(nnew_data1, selectedStudent);
+    const nnnew_data2 = object_data_cleaning.makeArrayWithoutOS_selectedStudent(nnew_data2, selectedStudent);
+
+    object_stackedbarchart.loadStackedBarChart(nnnew_data1, id_eng, switch_showLable);
+    object_stackedbarchart.loadStackedBarChart(nnnew_data2, id_squa, switch_showLable);
+
+    // console.log(nnnew_data1);
+    return {nnew_data1, nnew_data2};
 }
 
 function loadAndGenerateGraph(selectedStudentFIND_Database, englishStudent, squashStudent, switch_showLable) {
@@ -297,6 +306,7 @@ function loadAndGenerateGraph(selectedStudentFIND_Database, englishStudent, squa
     dataArray = [];
 
     // Generate Chart
+    console.log(data_English);
     generateChart(data_English, data_Squash, switch_showLable);
 }
 
@@ -321,16 +331,71 @@ function populateInfo(name, gender, cohort, class_CUB, dob, school) {
     document.querySelector('.personal_info').innerHTML = personalInfo;
 }
 
+export async function generateChartsFor2022(selectedYear, selectedStudent, fileName1, fileName2, selectedStudent_cohort, id_aveKPI, id_eng, id_squa, switch_showLable) {
+    const object_data_loadfile1 = new DATA_LOADFILE();
+    const object_data_loadfile2 = new DATA_LOADFILE();
+
+    await object_data_loadfile1.loadNparseCSV_async(fileName1, selectedYear);
+    const data_English_KPI = object_data_loadfile1.objectData;
+
+    await object_data_loadfile2.loadNparseCSV_async(fileName2, selectedYear);
+    const data_Squash_KPI = object_data_loadfile2.objectData;
+    const selectedStudentFIND_Eng_KPI_2022_COHORT1 = data_English_KPI.find(student => student.name === selectedStudent);
+    const selectedStudentFIND_Squash_KPI_2022_COHORT1 = data_Squash_KPI.find(student => student.name === selectedStudent);
+
+    let data_English;
+    let data_Squash;
+    let array1 = [];
+    let array2 = [];
+    // 2022_COHORT 1_ENGLISH
+    if (selectedStudentFIND_Eng_KPI_2022_COHORT1) {
+        let dataArray = [];
+
+        dataArray.push(selectedStudent);
+        dataArray.push(selectedStudentFIND_Eng_KPI_2022_COHORT1.year);
+        array1.push(dataArray);
+        dataArray = [];
+        array1.push(selectedStudentFIND_Eng_KPI_2022_COHORT1.month);
+        selectedStudentFIND_Eng_KPI_2022_COHORT1.scores.forEach(element => {
+            dataArray.push(element);
+        });
+        array1.push(dataArray);
+        dataArray = [];
+
+        data_English = object_array_monthly_EachStudent.arrangeArray_OS(array1);
+    }
+
+    // 2022_COHORT 1_SQUASH
+    if (selectedStudentFIND_Squash_KPI_2022_COHORT1) {
+        let dataArray = [];
+
+        dataArray.push(selectedStudent);
+        dataArray.push(selectedStudentFIND_Squash_KPI_2022_COHORT1.year);
+        array2.push(dataArray);
+        dataArray = [];
+        array2.push(selectedStudentFIND_Squash_KPI_2022_COHORT1.month);
+        selectedStudentFIND_Squash_KPI_2022_COHORT1.scores.forEach(element => {
+            dataArray.push(element);
+        });
+        array2.push(dataArray);
+        dataArray = [];
+
+        data_Squash = object_array_monthly_EachStudent.arrangeArray_OS(array2);
+    }
+
+    // Line Chart
+    object_linechart.loadLineChart(data_English, data_Squash, id_aveKPI, switch_showLable);
+
+    // Stacked bar Chart
+    const {nnew_data1, nnew_data2} = await loadAndGenerateGraph_for_2022('English', 'Squash', selectedYear, selectedStudent_cohort, selectedStudent, id_eng, id_squa, switch_showLable);
+    return {nnew_data1, nnew_data2};
+}
+
+
 import { generateChart_StudentPerformacneDashboard } from './display_attendance.js';
 function updateChart(selectedYear, selectedStudent, switch_showLable) {
     //delete the currrent graph
     deleteChart ();
-
-    let data_English = [];
-    let data_Squash = [];
-    let dataArray = [];
-    let array1 = [];
-    let array2 = [];
 
     object_database_loadfile.loadNparseCSV(Database_NDO, () => {
         const data_Database_NDO = object_database_loadfile.objectData;
@@ -354,72 +419,21 @@ function updateChart(selectedYear, selectedStudent, switch_showLable) {
             findStudentInCohort(fileName1, fileName2, selectedYear, selectedStudent, ({ englishStudent, squashStudent }) => {
     
             // Forecasting
-            chart_forecasting(selectedStudent, selectedStudent_cohort);
+            chart_forecasting(selectedStudent, selectedStudent_cohort, "#line_chart_yearly");
+            generateChart_StudentPerformacneDashboard(selectedYear, selectedStudent, '#line_chart_att_student', switch_showLable);
     
     
     
             // 2022
 
             if(selectedYear === '2022') { // ONLY FOR 2022
-                const object_data_loadfile1 = new DATA_LOADFILE();
-                const object_data_loadfile2 = new DATA_LOADFILE();
-                object_data_loadfile1.loadNparseCSV(fileName1, selectedYear, () => {
-                    const data_English_KPI = object_data_loadfile1.objectData;
-                    object_data_loadfile2.loadNparseCSV(fileName2, selectedYear, () => {
-                        const data_Squash_KPI = object_data_loadfile2.objectData;
-                        const selectedStudentFIND_Eng_KPI_2022_COHORT1 = data_English_KPI.find(student => student.name === selectedStudent);
-                        const selectedStudentFIND_Squash_KPI_2022_COHORT1 = data_Squash_KPI.find(student => student.name === selectedStudent);
-
-                        // 2022_COHORT 1_ENGLISH
-                        if (selectedStudentFIND_Eng_KPI_2022_COHORT1) {
-                            dataArray.push(selectedStudentFIND_Database.nameofchild);
-                            dataArray.push(selectedStudentFIND_Eng_KPI_2022_COHORT1.year);
-                            array1.push(dataArray);
-                            dataArray = [];
-                            array1.push(selectedStudentFIND_Eng_KPI_2022_COHORT1.month);
-                            selectedStudentFIND_Eng_KPI_2022_COHORT1.scores.forEach(element => {
-                                dataArray.push(element);
-                            });
-                            array1.push(dataArray);
-                            dataArray = [];
-            
-                            data_English = object_array_monthly_EachStudent.arrangeArray_OS(array1);
-                        }
-                        // 2022_COHORT 1_SQUASH
-                        if (selectedStudentFIND_Squash_KPI_2022_COHORT1) {
-                            dataArray.push(selectedStudentFIND_Database.nameofchild);
-                            dataArray.push(selectedStudentFIND_Squash_KPI_2022_COHORT1.year);
-                            array2.push(dataArray);
-                            dataArray = [];
-                            array2.push(selectedStudentFIND_Squash_KPI_2022_COHORT1.month);
-                            selectedStudentFIND_Squash_KPI_2022_COHORT1.scores.forEach(element => {
-                                dataArray.push(element);
-                            });
-                            array2.push(dataArray);
-                            dataArray = [];
-                            
-                            data_Squash = object_array_monthly_EachStudent.arrangeArray_OS(array2);
-                        }
-                        // Line Chart
-                        object_linechart.loadLineChart(data_English, data_Squash, switch_showLable);
-            
-                        //Stacked bar Chart
-                        loadAndGenerateGraph_for_2022('English', 'Squash',selectedYear, selectedStudent_cohort,function(nnew_data1, nnew_data2) {
-                            const nnnew_data1 = object_data_cleaning.makeArrayWithoutOS_selectedStudent (nnew_data1, selectedStudent);
-                            const nnnew_data2 = object_data_cleaning.makeArrayWithoutOS_selectedStudent (nnew_data2, selectedStudent);
-                            
-                            object_stackedbarchart.loadStackedBarChart(nnnew_data1, "#stacked_bar_chart_english", switch_showLable);
-                            object_stackedbarchart.loadStackedBarChart(nnnew_data2, "#stacked_bar_chart_squash", switch_showLable);
-                        });
-                        generateChart_StudentPerformacneDashboard(selectedYear, selectedStudent, switch_showLable);
-                    });
-                });
+                generateChartsFor2022(selectedYear, selectedStudent, fileName1, fileName2,selectedStudent_cohort, 
+                    "#line_chart", "#stacked_bar_chart_english", "#stacked_bar_chart_squash", switch_showLable);
                 
             }
             else {
                 // Graph & Correlation
                 loadAndGenerateGraph(selectedStudentFIND_Database, englishStudent, squashStudent, switch_showLable);
-                generateChart_StudentPerformacneDashboard(selectedYear, selectedStudent, switch_showLable);
             }
             });
             
@@ -430,13 +444,52 @@ function updateChart(selectedYear, selectedStudent, switch_showLable) {
 
 function deleteChart () {
     document.querySelector('.personal_info').innerHTML = '';
-    object_linechart.deleteLineChart();
+    object_linechart.deleteLineChart("#line_chart");
     object_linechart.deleteLineChart_yearly();
     object_stackedbarchart.deleteStackedBarChart("#stacked_bar_chart_english", "#stacked_bar_chart_squash");
     object_linechart_att.deleteLineChart('#line_chart_att_student');
 }
 
 // Class Performance Dashboard
+
+export async function loadAndGenerateGraph_for_2022_class(programme1, programme2, chosenYear, chosenCohort, selectedClass, id_ave, id_eng, id_squa, switch_showLable) {
+    const cohortNum = parseInt(chosenCohort.replace("COHORT", ""));
+    const object_data_loadfile1 = new DATA_LOADFILE();
+    const fileName1 = `./datasets_csv/KPI_(C${cohortNum})_${chosenYear}_${programme1}_KPIs.csv`;
+    const object_data_loadfile2 = new DATA_LOADFILE();
+    const fileName2 = `./datasets_csv/KPI_(C${cohortNum})_${chosenYear}_${programme2}_KPIs.csv`;
+
+    await object_data_loadfile1.loadNparseCSV_async(fileName1, chosenYear);
+    const data1 = object_data_loadfile1.parsedData;
+    // Data Cleaning: change the last occurence "OCTOBER" to "NOVEMBER"
+    const monthRow1 = data1[0].slice(2).map(month => month.split(' ')[0].toUpperCase()); // First row containing the month data, accessing the third element
+    const lastIndexOct1 = monthRow1.lastIndexOf("OCTOBER");
+    if (lastIndexOct1 !== -1) {
+        monthRow1[lastIndexOct1] = "NOVEMBER";
+    }
+    data1[0] = data1[0].slice(0, 2).concat(monthRow1); // Replace the remaining space with the updated monthRow1
+
+    await object_data_loadfile2.loadNparseCSV_async(fileName2, chosenYear);
+    const data2 = object_data_loadfile2.parsedData;
+    // Data Cleaning: change the last occurence "OCTOBER" to "NOVEMBER"
+    const monthRow2 = data2[0].slice(2).map(month => month.split(' ')[0].toUpperCase()); // First row containing the month data, accessing the third element
+    const lastIndexOct2 = monthRow2.lastIndexOf("OCTOBER");
+    if (lastIndexOct2 !== -1) {
+        monthRow2[lastIndexOct2] = "NOVEMBER";
+    }
+    data2[0] = data2[0].slice(0, 2).concat(monthRow2); // Replace the remaining space with the updated monthRow2
+
+    const new_data1 = object_array_monthly_EachStudent.arrageArray_returnWithoutObject(data1);
+    const nnew_data1 = object_array_monthly_EachStudent.replaceNaNWithMean(new_data1);
+    const new_data2 = object_array_monthly_EachStudent.arrageArray_returnWithoutObject(data2);
+    const nnew_data2 = object_array_monthly_EachStudent.replaceNaNWithMean(new_data2);
+
+    // Chart
+    generateChart_class(nnew_data1, nnew_data2, selectedClass, 
+        id_eng, id_squa, id_ave, switch_showLable);
+
+    return {nnew_data1, nnew_data2};
+}
 
 function updateChart_class(selectedClass, selectedCohort, selectedYear, switch_showLable) {
     const object_data_loadfile1 = new DATA_LOADFILE();
@@ -473,10 +526,13 @@ function updateChart_class(selectedClass, selectedCohort, selectedYear, switch_s
         displayMessage('');
         // 2022
         if(selectedCohort === 'COHORT 1' && selectedYear === '2022') {
-            loadAndGenerateGraph_for_2022('English', 'Squash',selectedYear, selectedCohort, function(nnew_data1, nnew_data2) {
-                // Chart
-                generateChart_class(nnew_data1, nnew_data2, selectedClass, switch_showLable);
-            });
+            loadAndGenerateGraph_for_2022_class('English', 'Squash', selectedYear, selectedCohort, selectedClass,
+                '#line_chart_class', "#stacked_bar_chart_class_english", "#stacked_bar_chart_class_squash", switch_showLable);
+            // loadAndGenerateGraph_for_2022('English', 'Squash',selectedYear, selectedCohort, function(nnew_data1, nnew_data2) {
+            //     // Chart
+            //     generateChart_class(nnew_data1, nnew_data2, selectedClass, 
+            //         "#stacked_bar_chart_class_english", "#stacked_bar_chart_class_squash", '#line_chart_class', switch_showLable);
+            // });
         }
         else {
             object_data_loadfile1.loadNparseCSV(fileName1, selectedYear, () => {
@@ -484,7 +540,8 @@ function updateChart_class(selectedClass, selectedCohort, selectedYear, switch_s
                 object_data_loadfile2.loadNparseCSV(fileName2, selectedYear, () => {
                     const data2 = object_data_loadfile2.parsedData;
                     // Chart
-                    generateChart_class(data1, data2, selectedClass, switch_showLable);
+                    generateChart_class(data1, data2, selectedClass,
+                        "#stacked_bar_chart_class_english", "#stacked_bar_chart_class_squash", '#line_chart_class', switch_showLable);
                 });
             });
         }
@@ -502,7 +559,7 @@ function deleteChart_class() {
 }
 
 // Get the student names in array depending on the teacher
-function filterAndAddNames(dataset, selectedteacher) {
+export function filterAndAddNames(dataset, selectedteacher) {
     const namesSet = new Set();
     dataset.forEach(student => {
         if(student.teacher.includes('/') ? student.teacher.split('/').includes(selectedteacher) : student.teacher === selectedteacher) {
@@ -606,14 +663,12 @@ function processDataRows(dataRows, data) {
     // console.log(data);
 }
 
-function updateChart_teacher(selectedYear, selectedteacher, selectedCohort, switch_showLable) {
+async function updateChart_teacher(selectedYear, selectedteacher, selectedCohort, switch_showLable) {
     // Delete current chart
     deleteChart_teacher();
 
     const object_data_loadfile1 = new DATA_LOADFILE();
     const object_data_loadfile2 = new DATA_LOADFILE();
-    const object_data_loadfile3 = new DATA_LOADFILE();
-    const object_data_loadfile4 = new DATA_LOADFILE();
 
     let min_max_fiveYear_cohort;
     if(Number(selectedYear) === getCurrentYear) {
@@ -638,113 +693,120 @@ function updateChart_teacher(selectedYear, selectedteacher, selectedCohort, swit
             allFileName_squa.push(fileName);
         }
     }
+    object_file.loadMultipleCSVs(allFileName_eng, (successfulFiles) => {
+        
+    });
 
     if(selectedCohort === '') {
-        let data_objectName;
-        let data;
-        let temp_cohort = 0;
-        const fileName1 = `./datasets_csv/KPI_(C${min_max_fiveYear_cohort.current})_${selectedYear}_English_KPIs.csv`;
-        const fileName3 = `./datasets_csv/KPI_(C${min_max_fiveYear_cohort.current})_${selectedYear}_Squash_KPIs.csv`;
-        const fileName4 = `./datasets_csv/KPI_(C${min_max_fiveYear_cohort.min})_${selectedYear}_Squash_KPIs.csv`;
+        let data_objectName = [];
+        let data = [];
 
-        object_data_loadfile1.loadNparseCSV(fileName1, selectedYear, () => {
-            const data1 = object_data_loadfile1.parsedData;
-            const data1_objectName = object_data_loadfile1.objectData;
-            const English = data1_objectName.find(student => student.teacher === selectedteacher);
-            // Chart
-            if(English && selectedteacher) {
-                temp_cohort = min_max_fiveYear_cohort.current;
-                // console.log(temp_cohort);
-                const fileName2 = `./datasets_csv/KPI_(C${temp_cohort - 1})_${selectedYear}_English_KPIs.csv`;
-                object_data_loadfile2.loadNparseCSV(fileName2, selectedYear, () => {
-                    const data2 = object_data_loadfile2.parsedData;
-                    const data2_objectName = object_data_loadfile2.objectData;
-                    data_objectName = [...data1_objectName, ...data2_objectName];
-                    data = [...data1, ...data2];
-                    // Chart
-                    const namesArray = filterAndAddNames(data_objectName, selectedteacher);
-                    generateChart_teacher(data, namesArray, switch_showLable);
-                    generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, namesArray, switch_showLable);
-                    populateInfo_teacher(toProperCase(selectedteacher), 'English Teacher');
-                });
+        for(let i=0; i<allFileName_eng.length;i++) {
+            const object_data_loadfile = new DATA_LOADFILE();
+            await object_data_loadfile.loadNparseCSV_async(allFileName_eng[i], selectedYear);
+            const data1 = object_data_loadfile.parsedData;
+            const data_objectName1 = object_data_loadfile.objectData;
+            data_objectName.push(...data_objectName1);
+            if(i>0) {
+                data.push(...data1.slice(2));
             }
-            else if(selectedteacher) { // Squash
-                object_data_loadfile3.loadNparseCSV(fileName3, selectedYear, () => {
-                    const data3 = object_data_loadfile3.parsedData;
-                    const data3_objectName = object_data_loadfile3.objectData;
-                
-                    object_data_loadfile4.loadNparseCSV(fileName4, selectedYear, () => {
-                        const data4 = object_data_loadfile4.parsedData;
-                        const data4_objectName = object_data_loadfile4.objectData;
-                
-                        const data_objectName = [...data3_objectName, ...data4_objectName];
-                        const [header1, data3Rows] = [data3[1], data3.slice(2)];
-                        const [header2, data4Rows] = [data4[1], data4.slice(2)];
-                
-                        let data = [header2.length > header1.length ? data4[0].slice() : data3[0].slice(), header2.length > header1.length ? data4[1].slice() : data3[1].slice()];
-                        const cpy = [...data];
-                        // console.log(cpy);
-                        let monthcount = 0;
-                        let prevMonth = '';
-                        let new_month = [];
-                        let new_header = [];
-                        let new_cpy = [];
-                        for(let i=0; i<cpy[0].length; i++) {
-                            const month = cpy[0][i];
-                            const header = cpy[1][i];
-                            if(prevMonth === '') {
-                                prevMonth = month
-                                monthcount++;
-                            }
-                            else if(prevMonth === month) {
-                                monthcount++;
-                            }
-                            else if(prevMonth !== month) {
-                                prevMonth = month
-                                monthcount = 0;
-                                // console.log(prevMonth);
-                            }
-                            if(monthcount === 1) {
-                                if(header !== 'E' && header !== ''){
-                                    // console.log(header);
-                                    // Add 'E', 'C', 'S' to header
-                                    new_header.push('E');
-                                    new_header.push('C');
-                                    new_header.push('S');
-                                    new_header.push(header);
-                                    new_month.push(prevMonth);
-                                    new_month.push(prevMonth);
-                                    new_month.push(prevMonth);
-                                    new_month.push(month);
+            else{
+                data.push(...data1);
+            }
+        }
 
-                                }
-                                else {
-                                    new_month.push(month);
-                                    new_header.push(header);
-                                }
+        const English = data_objectName.find(student => student.teacher === selectedteacher);
+        // Chart
+        if(English && selectedteacher) {
+            // Chart
+            const namesArray = filterAndAddNames(data_objectName, selectedteacher);
+            generateChart_teacher(data, namesArray, switch_showLable);
+            generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, namesArray, '#line_chart_att_teacher', switch_showLable);
+            populateInfo_teacher(toProperCase(selectedteacher), 'English Teacher');
+        }
+        else if(selectedteacher) { // Squash
+            data_objectName = [];
+            data = [];
+            
+            let header_array = [];
+            for(let i=0; i<allFileName_squa.length;i++) {
+                const object_data_loadfile = new DATA_LOADFILE();
+                await object_data_loadfile.loadNparseCSV_async(allFileName_squa[i], selectedYear);
+                const data1 = object_data_loadfile.parsedData;
+                header_array.push({month: data1[0], header: data1[1]});
+            }
+            let getHeader = [];
+            let maxHeaderLength = 0;
+
+            header_array.forEach(({ month, header }) => {
+                if (header.length > maxHeaderLength) {
+                    getHeader = [month, header];
+                    maxHeaderLength = header.length;
+                }
+            });
+
+            // Ensures getHeader has at least one entry if no headers are longer than the initial one.
+            if (getHeader.length === 0 && header_array.length > 0) {
+                getHeader = [header_array[0].month, header_array[0].header];
+            }
+            for(let i=0; i<allFileName_squa.length;i++) {
+                const object_data_loadfile = new DATA_LOADFILE();
+                await object_data_loadfile.loadNparseCSV_async(allFileName_squa[i], selectedYear);
+                const data1 = object_data_loadfile.parsedData;
+                const data_objectName1 = object_data_loadfile.objectData;
+                data_objectName.push(...data_objectName1);
+                if(i===0) {
+                    let monthcount = 0;
+                    let prevMonth = '';
+                    let new_month = [];
+                    let new_header = [];
+                    for(let i=0; i<getHeader[0].length; i++) {
+                        const month = getHeader[0][i];
+                        const header = getHeader[1][i];
+                        if(prevMonth === '') {
+                            prevMonth = month
+                            monthcount++;
+                        }
+                        else if(prevMonth === month) {
+                            monthcount++;
+                        }
+                        else if(prevMonth !== month) {
+                            prevMonth = month
+                            monthcount = 0;
+                        }
+                        if(monthcount === 1) {
+                            if(header !== 'E' && header !== ''){
+                                new_header.push('E');
+                                new_header.push('C');
+                                new_header.push('S');
+                                new_header.push(header);
+                                new_month.push(prevMonth);
+                                new_month.push(prevMonth);
+                                new_month.push(prevMonth);
+                                new_month.push(month);
+
                             }
                             else {
                                 new_month.push(month);
                                 new_header.push(header);
-
                             }
                         }
-                        new_cpy.push(new_month);
-                        new_cpy.push(new_header);
-                        // console.log(new_cpy);
-                        data = new_cpy;
-                        processDataRows(data3, data, [data3[0], data3[1]]);
-                        processDataRows(data4, data, [data4[0], data4[1]]);
-                
-                        // console.log(data);
-                        const namesArray = filterAndAddNames(data_objectName, selectedteacher);
-                        generateChart_teacher(data, namesArray, switch_showLable);
-                        generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, namesArray, switch_showLable);
-                        populateInfo_teacher(toProperCase(selectedteacher), 'Squash Teacher');
-                    });
-                });
+                        else {
+                            new_month.push(month);
+                            new_header.push(header);
+
+                        }
+                    }
+                    data.push(new_month);
+                    data.push(new_header);
+                }
+                processDataRows(data1, data);
             }
-        });
+            const namesArray = filterAndAddNames(data_objectName, selectedteacher);
+            generateChart_teacher(data, namesArray, switch_showLable);
+            generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, namesArray, '#line_chart_att_teacher', switch_showLable);
+            populateInfo_teacher(toProperCase(selectedteacher), 'Squash Teacher');
+        }
     }
     else {
         // Retrieve value from user select in "html"
@@ -762,20 +824,20 @@ function updateChart_teacher(selectedYear, selectedteacher, selectedCohort, swit
             object_data_loadfile2.loadNparseCSV(fileName2, selectedYear, () => {
                 const data2 = object_data_loadfile2.parsedData;
                 const data2_objectName = object_data_loadfile2.objectData;
-                console.log(data2_objectName);
+                // console.log(data2_objectName);
                 const English = data1_objectName.find(student => student.teacher === selectedteacher);
                 const Squash = data2_objectName.find(student => student.teacher === selectedteacher);
                 // Chart
                 if(English) {
                     const namesArray = filterAndAddNames(data1_objectName, selectedteacher);
                     generateChart_teacher(data1, namesArray, switch_showLable);
-                    generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, namesArray, switch_showLable);
+                    generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, namesArray, '#line_chart_att_teacher', switch_showLable);
                     populateInfo_teacher(toProperCase(selectedteacher), 'English Teacher');
                 }
                 else if(Squash) {
                     const namesArray = filterAndAddNames(data2_objectName, selectedteacher);
                     generateChart_teacher(data2, namesArray, switch_showLable);
-                    generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, namesArray, switch_showLable);
+                    generateChart_TeacherPerformacneDashboard(selectedYear, selectedteacher, namesArray, '#line_chart_att_teacher', switch_showLable);
                     populateInfo_teacher(toProperCase(selectedteacher), 'Squash Teacher');
                 }
             });

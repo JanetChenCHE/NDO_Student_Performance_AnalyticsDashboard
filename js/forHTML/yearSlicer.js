@@ -79,3 +79,29 @@ else {
     document.getElementById("year_att_factor_analysis").setAttribute("value", currentYear);
     document.getElementById("year_att_factor_analysis_value").innerText = currentYear;
 }
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const currentYear = new Date().getFullYear();
+    const cohortSelect = document.getElementById('cohort');
+    const yearSelect = document.getElementById('year');
+
+    cohortSelect.addEventListener('change', updateYearOptions);
+
+    function updateYearOptions() {
+        const selectedCohort = parseInt(cohortSelect.value);
+        const startYear = 2021 + selectedCohort;
+        const endYear = Math.min(startYear + 4, currentYear);
+
+        yearSelect.innerHTML = ''; // Clear existing options
+
+        for (let year = startYear; year <= endYear; year++) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        }
+    }
+
+    // Initialize the year options based on the default selected cohort
+    updateYearOptions();
+});

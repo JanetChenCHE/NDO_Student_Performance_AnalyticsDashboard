@@ -8,11 +8,18 @@ class STACKEDBARCHART_CLASS {
         const transposedData = data.slice(1).map(d => d.slice(1));
   
         // Dimensions
-        const document_id = id.replace('#', "");
-        const container = document.getElementById(document_id);
-        const margin = {top: 30, right: 30, bottom: 40, left: 50},
-        width = container.clientWidth - margin.left - margin.right,
-        height = 340 - margin.top - margin.bottom;
+        const document_id = id.replace('#', '');
+        const margin = {top: 30, right: 30, bottom: 40, left: 50};
+        let width;
+        const height = 340 - margin.top - margin.bottom;
+        // Check if document_id includes "PDF"
+        if (id.includes("PDF")) {
+            width = 400 - margin.left - margin.right;
+        }
+        else {
+            const container = document.getElementById(document_id);
+            width = container.clientWidth - margin.left - margin.right;
+        }
   
         // append the svg object to the body of the page
         const svg = d3.select(id)

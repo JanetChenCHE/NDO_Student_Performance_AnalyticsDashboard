@@ -37,18 +37,27 @@ class LINECHART {
         return att;
     }
 
-    loadLineChart(data1, data2, switch_showLable) {
+    loadLineChart(data1, data2, id, switch_showLable) {
+        this.deleteLineChart(id);
         const new_data1 = this.formatData(data1);
         const new_data2 = this.formatData(data2);
     
         // Set the dimensions and margins of the graph
-        const container = document.getElementById('line_chart');
-        const margin = { top: 30, right: 30, bottom: 70, left: 60 },
-            width = container.clientWidth - margin.left - margin.right,
-            height = 340 - margin.top - margin.bottom;
+        const document_id = id.replace('#', '');
+        const margin = {top: 30, right: 30, bottom: 70, left: 60};
+        let width;
+        const height = 340 - margin.top - margin.bottom;
+        // Check if document_id includes "PDF"
+        if (id.includes("PDF")) {
+            width = 400 - margin.left - margin.right;
+        }
+        else {
+            const container = document.getElementById(document_id);
+            width = container.clientWidth - margin.left - margin.right;
+        }
     
         // Append the svg object to the body of the page
-        const svg = d3.select('#line_chart')
+        const svg = d3.select(id)
             .append('svg')
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom)
@@ -205,7 +214,7 @@ class LINECHART {
     
     
 
-    loadLineChart_yearly(data1){
+    loadLineChart_yearly(data1, id){
         this.deleteLineChart_yearly();
 
         let countNOTNaN = 0;
@@ -222,13 +231,21 @@ class LINECHART {
             document.getElementById('noPrediction').innerText = '';
 
             //set the dimensions and margins of the graph
-            const container = document.getElementById('line_chart_yearly');
-            const margin = {top: 30, right: 30, bottom: 70, left: 60},
-            width = container.clientWidth - margin.left - margin.right,
-            height = 340 - margin.top - margin.bottom;
+            const document_id = id.replace('#', '');
+            const margin = {top: 30, right: 30, bottom: 70, left: 60};
+            let width;
+            const height = 340 - margin.top - margin.bottom;
+            // Check if document_id includes "PDF"
+            if (id.includes("PDF")) {
+                width = 400 - margin.left - margin.right;
+            }
+            else {
+                const container = document.getElementById(document_id);
+                width = container.clientWidth - margin.left - margin.right;
+            }
 
             //append the svg object to the body of the page
-            const svg = d3.select('#line_chart_yearly')
+            const svg = d3.select(id)
                 .append('svg')
                 .attr('width', width + margin.left + margin.right)
                 .attr('height', height + margin.top + margin.bottom)
@@ -291,23 +308,6 @@ class LINECHART {
             .style('padding', '10px')
             .style('position', 'absolute')
             .style('z-index', '10');
-    
-            // Tooltip functions
-            const mouseover = (event, d) => {
-                tooltip.html('Value: ' + d)
-                    .style('opacity', 1);
-            };
-            
-            const mousemove = (event, d) => {
-                const tooltipX = event.pageX + 10;
-                const tooltipY = event.pageY - 30;
-                tooltip.style('transform', 'translateY(-55%)')
-                    .style('left', tooltipX + 'px')
-                    .style('top', tooltipY + 'px');
-            };
-            const mouseleave = (event, d) => {
-                tooltip.style('opacity', 0);
-            };
             
             // Define line generators
             const line = d3.line()
@@ -327,9 +327,6 @@ class LINECHART {
                 .attr('stroke', '#262759')
                 .attr('stroke-width', 1.5)
                 .attr('d', line);
-                // .on('mouseover', mousemove)
-                // .on('mouseleave', mouseleave)
-                // .on('mouvemove', mousemove);
             svg.append('g')
             .selectAll('circle')
             .data(dataBeforeCurrentYear_OS_ENG)
@@ -343,43 +340,13 @@ class LINECHART {
             // .attr('fill', 'white')
 
         }
-
-        // add legend
-        const legendData = [
-            { label: 'English', color: '#262759' },
-            { label: 'Squash', color: '#ff9c20' }
-        ];
-
-        const legend = svg.append('g')
-        .attr('class', 'legend')
-        .attr('transform', `translate(${(width - 120) / 2}, ${height + margin.top + 20})`);
-
-        legend.selectAll('rect')
-            .data(legendData)
-            .enter()
-            .append('rect')
-            .attr('x', (d, i) => i * 100)
-            .attr('y', 0)
-            .attr('width', 10)
-            .attr('height', 10)
-            .attr('fill', d => d.color);
-
-        legend.selectAll('text')
-            .data(legendData)
-            .enter()
-            .append('text')
-            .attr('x', (d, i) => i * 100 + 15)
-            .attr('y', 9)
-            .text(d => d.label)
-            .style('font-size', '13px')
-            .attr('alignment-baseline', 'middle');
         
     }
 
 
-    deleteLineChart(){
+    deleteLineChart(id){
         // Remove existing chart if any
-        d3.select('#line_chart svg').remove();
+        d3.select(id + ' svg').remove();
     }
     deleteLineChart_yearly(){
         // Remove existing chart if any

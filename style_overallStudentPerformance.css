@@ -1,9 +1,4 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f7fa;
-    margin: 0;
-    padding: 0;
-}
+
 
 h4 {
     padding: 0;
@@ -354,17 +349,23 @@ h4 {
     transform: translateY(2px);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1400px) {
     .dashboard {
         flex-direction: column;
+        /* padding: 0; */
+        /* padding-left: 0; */
     }
 
-    .container {
-        width: 100%;
+    .container_overallStudentPerformance {
+        max-width: 100%;
+        /* margin-left: 0; */
     }
 
-    .student-card {
+    /* .student-card {
         flex: 0 0 calc(100% - 20px);
-    }
+    } */
 
+    .student-cards-container_highlight, .student-cards-container {
+        max-width: 100%;
+    }
 }

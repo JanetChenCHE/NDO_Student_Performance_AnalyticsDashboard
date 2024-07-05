@@ -2,6 +2,13 @@ html {
     font-family: sans-serif;
 }
 
+.hidden {
+    visibility: hidden;
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
 /* h1 {}
 h2 {}
 h3 {}
@@ -26,23 +33,19 @@ footer {
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
 }
 ::-webkit-scrollbar-track {
-    background: #262759;
+    background: rgba(38, 39, 89, 0.5);
 }
 ::-webkit-scrollbar-thumb {
-    background: #ff9c20;
+    background: rgba(255, 156, 32, 0.7);
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #ffc680;
+    background: rgba(255, 198, 128);
 }
 
 /* Top Navigation Menu */
-/* .topnav {
-    overflow: hidden;
-    background-color: white;
-} */
-
 .topnav {
     overflow: hidden;
     background-color: white;
@@ -86,13 +89,11 @@ footer {
     position: relative;
     bottom: 0;
     width: calc(100% - 40px);
-    /* width: 100%; */
 }
 table {
     width: 100%;
     border-collapse: collapse;
     font-size: 10px;
-    /* table-layout: fixed; */
 }
 th, td {
     padding: 2px;
@@ -130,7 +131,7 @@ caption {
     height: calc(100% - 50px); /* Adjust height to account for topnav */
     overflow: auto;
     z-index: 500; /* Ensure it is below the topnav */
-
+    
     &::-webkit-scrollbar {
         display: none;
     }
@@ -147,11 +148,6 @@ caption {
     margin-right: auto; /* Auto right margin */
     display: block; /* Make the image a block element for centering */
 }
-
-/* .sidebar_name_gender {
-    display: flex;
-    align-items: center;
-} */
 
 .sidebar_name_gender {
     display: flex;
@@ -228,18 +224,6 @@ div.content {
     justify-content: center; /* Centers the .containerChart horizontally */
 }
 
-/* .containerChart {
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 3px 20px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    margin-top: 10px;
-    margin-right: 20px;
-    display: inline-block;
-    min-height: 450px;
-    min-width: 450px;
-} */
 .containerChart {
     background-color: white;
     border: 1px solid #ccc;
@@ -253,9 +237,6 @@ div.content {
     flex-basis: calc(33.33% - 30px); /* Ensures three items per row, minus the gap */
     min-width: 450px; /* Minimum width constraint */
 }
-/* .containerChart:hover {
-    transform: scale(1.1); (120% zoom)
-} */
 .containerChart-head {
     border-bottom: 1px solid #ccc;
     padding: 10px;
@@ -370,6 +351,41 @@ table {
     background-color: #ff9c20;
     box-shadow: 0 5px #666;
     transform: translateY(4px);
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* Media - Different sizes of screen will get different styles*/

@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Include jsPDF AutoTable plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.18/jspdf.plugin.autotable.min.js"></script>
     <title>NDO Performance Dashobard</title>
 </head>
 <body>
@@ -41,7 +46,7 @@
             </div>
             <br>
             <div class="container-row">
-                <!-- <button class="button-pressedEffect" style="background-color: #1c1d52;" onclick="myFunction()">Download PDF</button> -->
+                <button class="button-pressedEffect" style="background-color: #1c1d52;" id="myBtn">Download PDF</button>
             </div>
         </div>
     </div>
@@ -593,6 +598,59 @@
             </div>
         </div>
     </div>
+    <!-- Download PDF -->
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Select Parameters</h2>
+        <form>
+            <label for="cohort">Select Cohort:</label>
+            <select id="cohort"></select>
+            <label for="year">Select Year:</label>
+            <select id="year"></select>
+            <!-- <button type="button" onclick="downloadReports()">Download Reports</button> -->
+            <button id="downloadButton" type="button" onclick="downloadReports()">Download Reports</button>
+            <div id="loadingMessage" style="display: none;">Generating reports, please wait...</div>          
+            <div id="progress-container" style="display: none;">
+                <label id="progress-label" for="progress-bar">Downloading reports: </label>
+                <progress id="progress-bar" value="0" max="100"></progress>
+                <span id="progress-text">0%</span>
+            </div>            
+        </form>
+        </div>
+    </div>
+    <div id="chartContainer" style="display: none;">
+        <!-- student -->
+        <div id="engKPI_PDF_student"></div>
+        <div id="squaKPI_PDF_student"></div>
+        <div id="aveKPI_PDF_student"></div>
+        <div id="yAveKPI_PDF_student"></div>
+        <div id="att_PDF_student"></div>
+        <!-- class -->
+        <div id="engKPI_PDF_class"></div>
+        <div id="squaKPI_PDF_class"></div>
+        <div id="aveKPI_PDF_class"></div>
+        <div id="att_PDF_class"></div>
+        <div id="engKPI_PDF_happy"></div>
+        <div id="squaKPI_PDF_happy"></div>
+        <div id="aveKPI_PDF_happy"></div>
+        <div id="att_PDF_happy"></div>
+        <div id="engKPI_PDF_kind"></div>
+        <div id="squaKPI_PDF_kind"></div>
+        <div id="aveKPI_PDF_kind"></div>
+        <div id="att_PDF_kind"></div>
+        <div id="engKPI_PDF_strong"></div>
+        <div id="squaKPI_PDF_strong"></div>
+        <div id="aveKPI_PDF_strong"></div>
+        <div id="att_PDF_strong"></div>
+         <!-- teacher -->
+        <div id="KPI_PDF_teacher"></div>
+        <div id="aveKPI_PDF_teacher"></div>
+        <div id="att_PDF_teacher"></div>
+    </div>
+
     
     <!-- JavaScript -->
     <script src="display.js" type="module"></script>
@@ -602,6 +660,15 @@
     <script src="./js/forHTML/nav.js"></script>
     <script src="./js/forHTML/yearSlicer.js"></script>
     <script src="./js/forHTML/cohortSelector.js"></script>
-    <!-- <script src="downloadPDF.js"></script> -->
+    <!-- Import and set downloadReports in the global scope -->
+    <script type="module">
+            import { downloadReports } from './downloadPDF.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Make the function available in the global scope
+            window.downloadReports = downloadReports;
+        });
+    </script>
+    <script src="./js/forHTML/modalDialog.js"></script>
 </body>
 </html>
