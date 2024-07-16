@@ -16,6 +16,7 @@ import { STACKEDBARCHART_TEACHER } from './js/d3/stackedBarChart_teacher.js';
 import { LINEARREGRESSION_PREDICTION } from './js/analysis/linearRegression_Prediction.js';
 
 //object
+//
 const object_file = new File();
 const object_database_loadfile = new DATABASE_LOADFILE();
 const object_data_cleaning = new DATACLEANING();
